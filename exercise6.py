@@ -139,28 +139,33 @@ class Player:
             screen.blit(img, (self.x, self.y))
 
 # --- Helper to create colored frames ---
-def make_frames(color, count):
+
+# --- Helper to load frames from a folder ---
+import os
+def load_frames(folder):
     frames = []
-    for i in range(count):
-        surf = pygame.Surface((50, 70))
-        surf.fill(color)
-        pygame.draw.rect(surf, (0,0,0), (0,0,50,70), 2)
-        pygame.draw.circle(surf, (255,255,255), (25, 35), 10 + i*2, 2)
-        frames.append(surf)
+    # Sort files to ensure correct order (assuming player1.png, player2.png, ...)
+    files = sorted(os.listdir(folder), key=lambda f: int(''.join(filter(str.isdigit, f)) or 0))
+    for fname in files:
+        if fname.endswith('.png'):
+            img = pygame.image.load(os.path.join(folder, fname)).convert_alpha()
+            frames.append(img)
     return frames
 
 # --- Main Program ---
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode((640, 480))
     clock = pygame.time.Clock()
-    # Create animations for each state
+    # Load animation frames from assets
+    base = os.path.join(os.path.dirname(__file__), 'Assets')
     anims = {
-        "idle": Animation(make_frames((100,200,255), 4), 0.2, loop=True),
-        "walk_left": Animation(make_frames((255,100,100), 6), 0.1, loop=True),
-        "walk_right": Animation(make_frames((100,255,100), 6), 0.1, loop=True),
-        "jump": Animation(make_frames((255,255,100), 2), 0.3, loop=True),
-        "air_attack": Animation(make_frames((200,0,200), 5), 0.08, loop=False),
+        "idle": Animation(load_frames(os.path.join(base, 'idle')), 0.2, loop=True),
+        "walk_right": Animation(load_frames(os.path.join(base, 'walking')), 0.08, loop=True),
+        "walk_left": Animation([pygame.transform.flip(img, True, False) for img in load_frames(os.path.join(base, 'walking'))], 0.08, loop=True),
+        "jump": Animation(load_frames(os.path.join(base, 'jump')), 0.12, loop=True),
+        "air_attack": Animation(load_frames(os.path.join(base, 'attacking')), 0.08, loop=False),
     }
     anim_set = AnimationSet(anims)
     player = Player(300, 300, anim_set)
