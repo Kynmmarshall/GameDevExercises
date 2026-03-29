@@ -64,3 +64,14 @@ if __name__ == "__main__":
 	game.run()
 
 
+#Reflection:
+
+# Delta time is crucial in game development to ensure consistent movement and gameplay
+# across different hardware and frame rates. Without delta time, objects move faster on
+# high-FPS systems and slower on low-FPS ones, leading to unfair or broken gameplay.
+
+# By multiplying movement and animations by the time elapsed since the last frame,
+# delta time decouples game logic from rendering speed, resulting in smooth and
+# predictable behavior regardless of performance.
+
+# This makes games more robust, fair, and enjoyable for all players, regardless of their hardware capabilities.
